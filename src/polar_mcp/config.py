@@ -1,0 +1,12 @@
+from __future__ import annotations
+
+BASE_URL = "https://www.polaraccesslink.com/v3"
+
+MAX_RETRIES = 3
+RETRY_DELAYS = (0.5, 1.0, 2.0)
+HTTP_TIMEOUT_SECONDS = 30.0
+
+DEFAULT_CARDIO_LOAD_DAYS = 30
+MAX_CARDIO_LOAD_DAYS = 90
+MAX_ACTIVITY_RANGE_DAYS = 28
+MAX_LOOKBACK_DAYS = 365
