@@ -56,9 +56,49 @@ class PolarApiClient:
         params: Mapping[str, Any] | None = None,
         treat_404_as_no_data: bool = False,
     ) -> ApiResponse:
+        response, rate_limit = self._request(
+            path,
+            params=params,
+            treat_404_as_no_data=treat_404_as_no_data,
+        )
+        if response.status_code in {204, 404}:
+            return ApiResponse(None, rate_limit, response.status_code)
+        try:
+            payload = response.json()
+        except ValueError as exc:
+            raise UpstreamServerError(
+                "Polar API returned non-JSON payload.",
+                "Retry the request. If this repeats, inspect upstream behavior.",
+            ) from exc
+        return ApiResponse(payload, rate_limit, response.status_code)
+
+    def request_text(
+        self,
+        path: str,
+        params: Mapping[str, Any] | None = None,
+        treat_404_as_no_data: bool = False,
+    ) -> ApiResponse:
+        response, rate_limit = self._request(
+            path,
+            params=params,
+            treat_404_as_no_data=treat_404_as_no_data,
+            accept="*/*",
+        )
+        if response.status_code in {204, 404}:
+            return ApiResponse(None, rate_limit, response.status_code)
+        return ApiResponse(response.text, rate_limit, response.status_code)
+
+    def _request(
+        self,
+        path: str,
+        params: Mapping[str, Any] | None = None,
+        treat_404_as_no_data: bool = False,
+        accept: str | None = None,
+    ) -> tuple[httpx.Response, RateLimitInfo | None]:
         for attempt in range(MAX_RETRIES + 1):
             try:
-                response = self._client.get(path, params=params)
+                headers = {"Accept": accept} if accept is not None else None
+                response = self._client.get(path, params=params, headers=headers)
             except (httpx.TimeoutException, httpx.NetworkError) as exc:
                 if attempt < MAX_RETRIES:
                     self._backoff(attempt)
@@ -78,7 +118,7 @@ class PolarApiClient:
 
             if status == 404:
                 if treat_404_as_no_data:
-                    return ApiResponse(None, rate_limit, status)
+                    return response, rate_limit
                 raise NotFoundError(
                     "Requested Polar resource was not found.",
                     "Check identifiers and endpoint path.",
@@ -104,7 +144,7 @@ class PolarApiClient:
                 )
 
             if status == 204:
-                return ApiResponse(None, rate_limit, status)
+                return response, rate_limit
 
             if status == 400:
                 detail = response.text.strip() or "Bad request."
@@ -118,15 +158,7 @@ class PolarApiClient:
                     f"Unexpected Polar API error: HTTP {status}.",
                     "Retry with a smaller request or validate the input.",
                 )
-
-            try:
-                payload = response.json()
-            except ValueError as exc:
-                raise UpstreamServerError(
-                    "Polar API returned non-JSON payload.",
-                    "Retry the request. If this repeats, inspect upstream behavior.",
-                ) from exc
-            return ApiResponse(payload, rate_limit, status)
+            return response, rate_limit
 
         raise UpstreamServerError("Polar API request failed after retries.", "Retry later.")
 

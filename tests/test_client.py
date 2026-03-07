@@ -113,3 +113,19 @@ def test_request_json_captures_rate_limit_headers() -> None:
     assert response.rate_limit["short"]["usage"] == 3
     assert response.rate_limit["short"]["limit"] == 500
     assert response.rate_limit["short"]["reset_seconds"] == 620
+
+
+def test_request_text_returns_plain_text_payload() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.headers["Accept"] == "*/*"
+        return httpx.Response(200, text="<tcx />")
+
+    client = _client(httpx.MockTransport(handler))
+    response = client.request_text("/resource")
+    assert response.payload == "<tcx />"
+
+
+def test_request_text_404_no_data_allowed() -> None:
+    client = _client(httpx.MockTransport(lambda _: httpx.Response(404, text="missing")))
+    response = client.request_text("/resource", treat_404_as_no_data=True)
+    assert response.payload is None

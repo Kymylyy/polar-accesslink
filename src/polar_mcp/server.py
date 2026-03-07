@@ -7,7 +7,14 @@ from .client import PolarApiClient
 from .config import BASE_URL
 from .errors import ValidationError
 from .service import PolarService
-from .tools import activities_range, activity_by_date, cardio_load_by_date, cardio_load_recent
+from .tools import (
+    activities_range,
+    activity_by_date,
+    cardio_load_by_date,
+    cardio_load_recent,
+    exercise_by_id,
+    exercises_recent,
+)
 
 try:
     from fastmcp import FastMCP as _FastMCP
@@ -72,6 +79,40 @@ def create_mcp_server() -> Any:
     def tool_cardio_load_by_date(date: str) -> dict[str, Any]:
         service = get_service()
         return cardio_load_by_date(service, date=date)
+
+    @mcp.tool()
+    def tool_exercises_recent(
+        include_samples: bool = False,
+        include_zones: bool = False,
+        include_route: bool = False,
+        include_tcx_metadata: bool = False,
+    ) -> dict[str, Any]:
+        service = get_service()
+        return exercises_recent(
+            service,
+            include_samples=include_samples,
+            include_zones=include_zones,
+            include_route=include_route,
+            include_tcx_metadata=include_tcx_metadata,
+        )
+
+    @mcp.tool()
+    def tool_exercise_by_id(
+        exercise_id: str,
+        include_samples: bool = False,
+        include_zones: bool = False,
+        include_route: bool = False,
+        include_tcx_metadata: bool = False,
+    ) -> dict[str, Any]:
+        service = get_service()
+        return exercise_by_id(
+            service,
+            exercise_id=exercise_id,
+            include_samples=include_samples,
+            include_zones=include_zones,
+            include_route=include_route,
+            include_tcx_metadata=include_tcx_metadata,
+        )
 
     return mcp
 

@@ -39,6 +39,8 @@ def test_create_mcp_server_registers_tools(
     assert "tool_activity_by_date" in mcp.tools
     assert "tool_cardio_load_recent" in mcp.tools
     assert "tool_cardio_load_by_date" in mcp.tools
+    assert "tool_exercises_recent" in mcp.tools
+    assert "tool_exercise_by_id" in mcp.tools
 
 
 def teardown_module() -> None:

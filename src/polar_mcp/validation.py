@@ -45,3 +45,12 @@ def validate_lookback(value: date, field_name: str) -> None:
     age = (today - value).days
     if age > MAX_LOOKBACK_DAYS:
         raise ValidationError(f"{field_name} cannot be older than {MAX_LOOKBACK_DAYS} days.")
+
+
+def validate_non_empty_string(value: str, field_name: str) -> str:
+    if not isinstance(value, str):
+        raise ValidationError(f"{field_name} must be a string.")
+    trimmed = value.strip()
+    if not trimmed:
+        raise ValidationError(f"{field_name} cannot be empty.")
+    return trimmed
