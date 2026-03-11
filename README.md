@@ -97,9 +97,9 @@ python3 polar_auth.py
 - `cardio-load` is read-only load status/history data.
 - `exercise` JSON does not expose workout `title`/`notes`.
 - `include_tcx_metadata=true` makes an extra TCX request per exercise to enrich `title` and `notes`.
+- **TCX `title` is limited to 15 characters** — the Garmin TCX XSD schema defines `Plan/Name` as `RestrictedToken_t` (`maxLength=15`). Polar truncates longer titles to comply with the spec. The `notes` field (`xsd:string`) has no length limit. If you need full exercise descriptions, put them in the Notes field in Polar Flow.
 - `GPX` data is only available when an exercise has route data.
 
 ## TODO
 
 - Add raw export helpers for `FIT` and `GPX` when needed.
-- Consider richer TCX parsing beyond `title`/`notes` if session views need laps or trackpoints.
