@@ -3,8 +3,8 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from polar_mcp.client import PolarApiClient
-from polar_mcp.errors import (
+from polar_accesslink.client import PolarApiClient
+from polar_accesslink.errors import (
     NotFoundError,
     UpstreamAuthError,
     UpstreamRateLimitError,

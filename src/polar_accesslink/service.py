@@ -5,7 +5,7 @@ from typing import Any, Protocol
 
 from .client import ApiResponse, RateLimitInfo
 from .config import DEFAULT_CARDIO_LOAD_DAYS
-from .errors import PolarMcpError, UpstreamServerError
+from .errors import PolarAccessLinkError, UpstreamServerError
 from .response import build_error_response, build_response
 from .tcx import parse_tcx_metadata
 from .validation import (
@@ -52,7 +52,7 @@ class PolarService:
                 data=data,
                 rate_limit=rate_limit,
             )
-        except PolarMcpError as exc:
+        except PolarAccessLinkError as exc:
             return build_error_response(tool_name=tool_name, query=query, error=exc)
         except Exception:
             error = UpstreamServerError(

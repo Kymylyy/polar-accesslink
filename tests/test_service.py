@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from polar_mcp.client import ApiResponse
-from polar_mcp.config import MAX_LOOKBACK_DAYS
-from polar_mcp.errors import ValidationError
-from polar_mcp.service import PolarService
-from polar_mcp.tools import (
+from polar_accesslink.client import ApiResponse
+from polar_accesslink.config import MAX_LOOKBACK_DAYS
+from polar_accesslink.errors import ValidationError
+from polar_accesslink.service import PolarService
+from polar_accesslink.tools import (
     activities_range,
     activity_by_date,
     cardio_load_by_date,

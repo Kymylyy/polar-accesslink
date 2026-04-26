@@ -4,7 +4,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from .client import RateLimitInfo
-from .errors import PolarMcpError
+from .errors import PolarAccessLinkError
 
 
 def build_response(
@@ -32,7 +32,7 @@ def build_error_response(
     *,
     tool_name: str,
     query: dict[str, Any],
-    error: PolarMcpError,
+    error: PolarAccessLinkError,
 ) -> dict[str, Any]:
     return {
         "status": "error",

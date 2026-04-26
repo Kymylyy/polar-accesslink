@@ -3,16 +3,16 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "polar-mcp"
+name = "polar-accesslink"
 version = "0.1.0"
-description = "Read-only MCP server for Polar AccessLink activities, cardio load, and exercises"
+description = "Shared Polar AccessLink core with MCP and CLI adapters for data export"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [
   { name = "Kymylyy" },
 ]
-keywords = ["mcp", "polar", "accesslink", "fitness", "cardio"]
+keywords = ["polar", "accesslink", "mcp", "cli", "fitness", "cardio"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
@@ -35,7 +35,8 @@ dev = [
 ]
 
 [project.scripts]
-polar-mcp = "polar_mcp.server:main"
+polar-mcp = "polar_accesslink.mcp_server:main"
+polar-cli = "polar_accesslink.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
