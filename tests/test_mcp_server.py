@@ -5,8 +5,8 @@ from typing import Any
 
 import pytest
 
-from polar_mcp import server
-from polar_mcp.errors import ValidationError
+from polar_accesslink import mcp_server as server
+from polar_accesslink.errors import ValidationError
 
 
 class FakeMCP:

@@ -1,11 +1,18 @@
-# polar-mcp
+# polar-accesslink
 
-`polar-mcp` is a read-only MCP server for Polar AccessLink.
+`polar-accesslink` is a shared Polar AccessLink core with two adapters:
+- `polar-mcp` for LLM and MCP-compatible clients
+- `polar-cli` for cronjobs, exports, and simple automation
+
 Current scope includes `activities`, `cardio-load`, and `exercises`.
 
-It is designed for personal data access through an LLM or MCP-compatible client.
+## Architecture
 
-## Features
+- `polar_accesslink.service` and `polar_accesslink.client` contain the shared core.
+- `polar_accesslink.mcp_server` exposes the core through MCP tools.
+- `polar_accesslink.cli` exposes the same operations through a terminal command.
+
+## Supported Operations
 
 - `activities_range(from_date, to_date, include_samples=false)`
 - `activity_by_date(date, include_samples=false)`
@@ -14,7 +21,7 @@ It is designed for personal data access through an LLM or MCP-compatible client.
 - `exercises_recent(include_samples=false, include_zones=false, include_route=false, include_tcx_metadata=false)`
 - `exercise_by_id(exercise_id, include_samples=false, include_zones=false, include_route=false, include_tcx_metadata=false)`
 
-All tools return structured JSON envelopes:
+Both adapters return structured JSON envelopes:
 
 - `status`: `ok` | `no_data` | `error`
 - `query`
@@ -36,13 +43,25 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .[dev]
 export POLAR_ACCESS_TOKEN="your-access-token"
+```
+
+### MCP
+
+```bash
 polar-mcp
 ```
 
-You can also run:
+Compatibility wrapper:
 
 ```bash
 python3 run_polar_mcp.py
+```
+
+### CLI
+
+```bash
+polar-cli activities-range --from-date 2026-04-01 --to-date 2026-04-07 --pretty
+polar-cli exercises-recent --output jsonl --out data/exercises.jsonl
 ```
 
 ## MCP Configuration Example
@@ -59,6 +78,12 @@ python3 run_polar_mcp.py
     }
   }
 }
+```
+
+## Cron Example
+
+```bash
+0 6 * * * cd /absolute/path/to/polar-accesslink && . .venv/bin/activate && POLAR_ACCESS_TOKEN=your-access-token polar-cli exercises-recent --output json --out data/exercises.json
 ```
 
 ## OAuth Bootstrap Helper
@@ -84,6 +109,15 @@ export POLAR_REDIRECT_URI='http://127.0.0.1:3000/auth/polar/callback'
 export POLAR_MEMBER_ID='your-member-id'
 python3 polar_auth.py
 ```
+
+## Migration Notes
+
+- Python package changed from `polar_mcp` to `polar_accesslink`.
+- Distribution name changed from `polar-mcp` to `polar-accesslink`.
+- `polar-mcp` stays as the MCP executable.
+- `run_polar_mcp.py` stays as a compatibility wrapper, but now imports the renamed module.
+- New automation entrypoint: `polar-cli`.
+- If you have direct Python imports, cronjobs, or MCP configs pinned to old module paths, update them before upgrading.
 
 ## Privacy And Publishing
 

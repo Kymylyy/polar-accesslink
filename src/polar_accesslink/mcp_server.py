@@ -1,12 +1,8 @@
 from __future__ import annotations
 
-import os
 from typing import Any
 
-from .client import PolarApiClient
-from .config import BASE_URL
-from .errors import ValidationError
-from .service import PolarService
+from .bootstrap import build_service, get_service
 from .tools import (
     activities_range,
     activity_by_date,
@@ -23,26 +19,7 @@ except ModuleNotFoundError:  # pragma: no cover
 else:
     FastMCP = _FastMCP
 
-
-_SERVICE: PolarService | None = None
-
-
-def build_service() -> PolarService:
-    access_token = os.getenv("POLAR_ACCESS_TOKEN", "").strip()
-    if not access_token:
-        raise ValidationError(
-            "POLAR_ACCESS_TOKEN is missing.",
-            "Set POLAR_ACCESS_TOKEN in MCP server environment before startup.",
-        )
-    client = PolarApiClient(access_token=access_token, base_url=BASE_URL)
-    return PolarService(client)
-
-
-def get_service() -> PolarService:
-    global _SERVICE
-    if _SERVICE is None:
-        _SERVICE = build_service()
-    return _SERVICE
+__all__ = ["build_service", "get_service", "create_mcp_server", "main"]
 
 
 def create_mcp_server() -> Any:
